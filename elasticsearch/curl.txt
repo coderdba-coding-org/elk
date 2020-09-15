@@ -69,3 +69,38 @@ echo
 # FROM: https://www.tutorialspoint.com/elasticsearch/elasticsearch_populate.htm
 #======================================
 
+echo DELETE INDEX
+curl -XDELETE http://localhost:9200/school
+echo
+echo
+echo CREATE INDEX
+curl -XPUT http://localhost:9200/school
+
+echo
+echo Add data
+echo
+# Takes 'doc' also - does not have to be '_doc' as in examples
+curl -XPOST -H "Content-Type: application/json" http://localhost:9200/school/doc/1 -d '{
+   "name":"My School", "description":"State Afiliation",
+   "street":"Mystreet", "city":"MyCity", "state":"MyState", "zip":"22222",
+   "location":[55.5733056, 66.0122136], "fees":110,
+   "tags":["Good school", "Good teachers"], "rating":"5.0"
+}'
+
+# The following, without a type like "_doc" in the URL uses '10' itself as type
+# Then it will give a random value as 'ID' which will then have to be deleted with curl -XDELETE http://localhost:9200/school/10/V-JgkXQByQYxUK43QDC_
+# And, the wrong 'type' 10 may be not deletable - so we may have to delete the whole index 'school' itself with curl -XDELETE http://localhost:9200/school
+#
+#curl -XPOST -H "Content-Type: application/json" http://localhost:9200/school/10 -d '{
+#   "name":"My School", "description":"State Afiliation",
+#   "street":"Mystreet", "city":"MyCity", "state":"MyState", "zip":"22222",
+#   "location":[55.5733056, 66.0122136], "fees":110,
+#   "tags":["Good school", "Good teachers"], "rating":"5.0"
+#}'
+# RESULTS IN
+# {"_index":"school","_type":"10","_id":"V-JgkXQByQYxUK43QDC_","_version":1,"result":"created","_shards":{"total":2,"successful":1,"failed":0},"_seq_no":0,"_primary_term":1}
+
+echo
+echo Query added data
+echo
+curl -XGET http://localhost:9200/school/doc/1
